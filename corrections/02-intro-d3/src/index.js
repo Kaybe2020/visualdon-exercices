@@ -1,15 +1,17 @@
-import * as d3 from 'd3';
+import {select} from "d3-selection";
 
-d3.select("body").append("div").attr("class", "monSVG");
+// Append svg
+select("body").append("div").attr("class", "monSVG");
 
-const WIDTH = 500
-const HEIGHT = 500
+// Set width and height
+const width = 500
+const height = 500
 
 // Création SVG
-const monSVG= d3.select(".monSVG")
+const monSVG= select(".monSVG")
     .append("svg")
-    .attr("width", WIDTH)
-    .attr("height", HEIGHT)
+    .attr("width", width)
+    .attr("height", height)
 
 // Définition des groupes
 const groupe1 = monSVG.append('g')
@@ -66,14 +68,14 @@ groupe3
 
 
 // Changer la couleur du deuxième cercle
-const circle2 = d3.select('#secondCircle').attr("fill", "#E92528");
+const circle2 = select('#secondCircle').attr("fill", "#E92528");
 circle2.attr("cx", "100")
 circle2.attr("cx", "200")
 
 
 // Déplacer les cercles on click
-const circle1 = d3.select('#firstCircle');
-const circle3 = d3.select('#thirdCircle');
+const circle1 = select('#firstCircle');
+const circle3 = select('#thirdCircle');
 
 circle3.on("click", () => {
     circle1.attr("cx", "450")
@@ -84,19 +86,20 @@ circle3.on("click", () => {
 // Barchart
 const data = [20, 5, 25, 8, 15];
 
-const container = d3.select("body").append("div").attr("id", "barChart");
+const container = select("body").append("div").attr("id", "barChart");
 const barchart = container.append('svg')
-    .attr("width", WIDTH)
-    .attr("height", HEIGHT)
+    .attr("width", width)
+    .attr("height", height)
 
 
 barchart.selectAll("rect")
     .data(data)
-    .enter()
-    .append("rect")
-    .attr('x', (d, i) => (i * 30))
-    .attr('y', d => 500 - d)
-    .attr('width', 20)
-    .attr('height', d => d)
-    .attr('stroke', 'black')
-    .attr('fill', 'black')
+    .join(enter => enter.append("rect")
+        .attr('x', (d, i) => (i * 30))
+        .attr('y', d => 500 - d)
+        .attr('width', 20)
+        .attr('height', d => d)
+        .attr('stroke', 'black')
+        .attr('fill', 'black')
+    );
+    
