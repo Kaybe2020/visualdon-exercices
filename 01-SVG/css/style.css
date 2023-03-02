@@ -1,3 +1,8 @@
 body {
       font-family: 'Open Sans', sans-serif;
 }
+
+#donut:hover {
+      /* border-radius: 60px; */
+      transform: scale(1.2);
+}

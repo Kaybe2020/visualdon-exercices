@@ -1,37 +1,79 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <script src="js/script.js" async></script>
 
-    <title>1-SVG</title>
-  </head>
-  <body>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <script src="js/script.js" async></script>
+  <title>1-SVG</title>
+</head>
 
-    <h1>Dessiner des formes</h1>
-    <h2>Rectangle</h2>
+<body>
 
-    <h2>Donut</h2>
+  <h1>Dessiner des formes</h1>
+  <h2>Rectangle</h2>
+  <!-- Dessiner un rectangle rouge de 400px de largeur et 100px de hauteur -->
+  <svg width="500" height="120">
+    <rect x="10" y="10" width="400" height="100" fill="red" />
+  </svg>
 
+  <h2>Donut</h2>
+  <!-- Dessiner un donut: avec contours noirs, sans remplissage, centré en (50,50), de rayon intérieur 30px et extérieur 60px -->
+  <svg width="500" height="120">
+    <circle cx="60" cy="60" r="60" fill="black" />
+    <circle cx="60" cy="60" r="30" fill="white" />
+  </svg>
 
-    <h2>Ligne</h2>
+  <h2>Ligne</h2>
+  <svg width="500" height="100">
+    <!-- créer une ligne qui passe par A(20px, 50px), qui a une longueur de 60px t a une pente de 5 -->
+    <line x1="20" y1="50" x2="80" y2="55" stroke="black" />
+  </svg>
 
+  <h2>Path</h2>
+  <!-- Ecrivez votre prénom avec <path></path> -->
+  <svg width="500" height="100">
+    <path stroke="violet" fill="none" d="M 10 0 L 10 50 L 27 0 M 20 20 L 35 50  M 40 50
+    L 50 20  L 60 50 M 45 35 H 55 M 65 50
+    V 20 H 80 V 35 H 65 L 80 50 M 85 50
+    V 20 H 100 M 85 35 H100 M 85 50 H 100 M 105 50
+    V 20 L 120 50 L 120 20 ">
+  </svg>
 
-    <h2>Path</h2>
+  <h1>Animer des formes</h1>
 
+  <h2>On click</h2>
+  <svg width="500" height="120">
+    <rect id="rectangle" x="10" y="10" width="400" height="100" fill="orange" />
+  </svg>
 
-    <h1>Animer des formes</h1>
+  <h2>On hover</h2>
+  <!-- Agrandir le rayon exterieur du donut -->
+  <svg width="500" height="160">
+    <circle id="donut" cx="60" cy="60" r="60" fill="black" />
+    <circle cx="60" cy="60" r="30" fill="white" />
+  </svg>
 
-    <h2>On click</h2>
+  <h2>Prenez la première lettre de votre prénom que vous avez créée ci-dessus. Faite bouger une forme de votre choix le
+    long de la lettre</h2>
+  <svg width="500" height="100">
+    <path d="M 10 0 L 10 50 L 27 0 M 20 20 L 35 50  M 40 50
+      L 50 20  L 60 50 M 45 35 H 55 M 65 50
+      V 20 H 80 V 35 H 65 L 80 50 M 85 50
+      V 20 H 100 M 85 35 H100 M 85 50 H 100 M 105 50
+      V 20 L 120 50 L 120 20 " fill="none" stroke="orange"></path>
+    <circle r="5" fill="yellow">
+      <animateMotion dur="10s" repeatCount="indefinite" path="M 10 0 L 10 50 L 27 0 M 20 20 L 35 50  M 40 50
+        L 50 20  L 60 50 M 45 35 H 55 M 65 50
+        V 20 H 80 V 35 H 65 L 80 50 M 85 50
+        V 20 H 100 M 85 35 H100 M 85 50 H 100 M 105 50
+        V 20 L 120 50 L 120 20 " />
+    </circle>
+  </svg>
 
-    <h2>On hover</h2>
+</body>
 
-    <h2>Prenez la première lettre de votre prénom que vous avez créée ci-dessus. Faite bouger une forme de votre choix le long de la lettre</h2>
-
-
-  </body>
 </html>
