@@ -7,6 +7,9 @@ import { axisLeft, axisBottom } from "d3-axis";
 import { geoMercator, geoPath } from "d3-geo";
 import { json } from "d3-fetch";
 
+import { transition } from "d3-transition";
+import { easeLinear } from "d3-ease";
+
 
 // Pour importer les données
 // import file from '../data/data.csv'
@@ -137,7 +140,8 @@ graphSvg.append("g") // créer un groupe g
 graphSvg.append("g") // créer un groupe g
     .call(axisLeft(espVieScale)); // créer l'axe Y
 
-console.log(espVie) // les données ont toutes la même espVue :64 et pibHabit : 1950
+// console.log(espVie) // les données ont toutes la même espVue :64 et pibHabit : 1950
+
 // Créer et placer les cercles
 graphSvg.selectAll("circle")
     .data(data2021)
@@ -145,11 +149,11 @@ graphSvg.selectAll("circle")
     .append("circle")
     .attr("cx", d => pibHabitScale(parseFloat(d.pibHabit))) // parseFloat permet de parser le string en nombre (on force pour être sur)
     .attr("cy", d => {
-        console.log(d); // confirme que les données sont correctement extraites
+        // console.log(d); // confirme que les données sont correctement extraites
         return espVieScale(parseFloat(d.espVie))
     })
     .attr("r", d => popScale(parseFloat(d.pop)))
-    .attr("fill", "steelblue");
+    .attr("fill", "orange");
 
 
 //créer le texte pour l'axe X
@@ -225,4 +229,117 @@ json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/worl
 
 
 // 4) Animation **************************************************************************************************************************
-//
+// Animer les données selon les années. En bref : faite le premier graphique, mais pour chaque année! Cela doit ressembler à la visualisation
+// proposée par Gapminder.
+
+// créer son svg
+const animationGraph = select("#animationMap")
+    .append('svg')
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("class", "map")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); // déplacer le groupe g
+
+// créer les axes
+animationGraph.append("g") // créer un groupe g
+    .attr("transform", "translate(0," + height + ")") // déplacer le groupe g
+    .call(axisBottom(pibHabitScale)); // créer l'axe X  call = appel de la fonction
+
+animationGraph.append("g") // créer un groupe g
+    .call(axisLeft(espVieScale)); // créer l'axe Y
+
+//créer le texte pour l'axe X
+animationGraph.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("PIB par habitant, inflation ajustée (dollars) ");
+
+//créer le texte pour l'axe Y
+animationGraph.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75rem") // déplacer le texte de 0.75rem
+    .attr("transform", "rotate(-90)")
+    .text("Espérance de vie (années)");
+
+
+
+//créer le texte pour l'axe X
+animationGraph.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("PIB par habitant, inflation ajustée (dollars) ");
+
+//créer le texte pour l'axe Y
+animationGraph.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75rem") // déplacer le texte de 0.75rem
+    .attr("transform", "rotate(-90)")
+    .text("Espérance de vie (années)");
+
+
+// créer une variable pour stocker l'ID de l'interval
+let intervalId;
+
+// créer la fonction d'animation
+function animation() {
+    // vérifier s'il y a déjà un internvalle
+    if (!intervalId) {
+        intervalId = setInterval(play, 100);
+    }
+}
+
+// créer les données en HTML (bouton play et stop)
+// créer la fonction play appellée dans animation
+let i = 0; // variable pour incrémenter (commence en 1800)
+function play() {
+    if (dataTotale[i].annee == 2021) { // si l'année est 2021
+        i = 0; // remettre i à 0
+    } else { // sinon on incrémente
+        i++;
+    }
+    // afficher l'année dans le HTML !! DOIT SE TROUVER DANS LA FONCTION PLAY !!
+    select('#textAnimation').text(dataTotale[i].annee)
+    updateChart(dataTotale[i].data); // mettre à jour les données
+}
+
+// Créer la fonction stop
+function stop() {
+    clearInterval(intervalId); // arrêter l'intervalle
+    intervalId = null; // remettre l'intervalle à null
+}
+
+// // créer la fonction updateChart pour mettre à jour les données
+function updateChart(dataUpdate) {
+    //créer les cercles
+    animationGraph.selectAll("circle")
+        .data(dataUpdate)
+        .join(enter => enter.append("circle") // enter permet de créer les cercles
+            .attr("cx", d => pibHabitScale(d.pibHabit))
+            .attr("cy", d => espVieScale(d.espVie))
+            .attr("r", 0)
+            .transition(transition()
+                .duration(500) // temps animation
+                .ease(easeLinear)) // type d'animation, easeLinear = animation linéaire
+            .attr("r", d => popScale(d.pop)) // permet de faire grossir les cercles
+            .attr("fill", "rgba(170, 50, 180, 0.5)")
+            ,
+            update => update.transition(transition().duration(500).ease(easeLinear)) // update permet de mettre à jour les cercles et prend en compte le temps d'animation
+                .attr("cx", d => pibHabitScale(d.pibHabit))
+                .attr("cy", d => espVieScale(d.espVie))
+                .attr("r", d => popScale(d.pop))
+            ,
+            exit => exit.remove()) // exit permet de supprimer les cercles
+}
+
+// écoute les évènements au clic
+document.getElementById("play").addEventListener("click", animation);
+document.getElementById("stop").addEventListener("click", stop);
