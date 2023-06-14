@@ -4,6 +4,10 @@ import { scaleSqrt, scaleLinear, scalePow } from "d3-scale";
 import { max, min } from "d3-array";
 import { axisLeft, axisBottom } from "d3-axis";
 
+import { geoMercator, geoPath } from "d3-geo";
+import { json } from "d3-fetch";
+
+
 // Pour importer les données
 // import file from '../data/data.csv'
 
@@ -66,8 +70,8 @@ const mergeByCountry = (data1, data2, data3) => {
     data1.map(item => {
         // créer un nouvel objet qui classe  les données dans data1, data2 et data3 par pays
         let obj = {
-            ...data2.find((item) => (item.country === item.country) && item),
-            ...data3.find((item) => (item.country === item.country) && item),
+            ...data2.find((d) => (d.country === item.country) && d),
+            ...data3.find((d) => (d.country === item.country) && d),
             ...item // ... signifie qu'on ajoute les données de item à l'objet
         }
         // ajouter l'objet dans le tableau data
@@ -107,6 +111,7 @@ const graphSvg = select("#graphicArea")
     .append('svg')
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("class", "StaticGraph")
     .append("g") // créer un groupe g
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); // déplacer le groupe g
 
@@ -132,7 +137,7 @@ graphSvg.append("g") // créer un groupe g
 graphSvg.append("g") // créer un groupe g
     .call(axisLeft(espVieScale)); // créer l'axe Y
 
-
+console.log(espVie) // les données ont toutes la même espVue :64 et pibHabit : 1950
 // Créer et placer les cercles
 graphSvg.selectAll("circle")
     .data(data2021)
@@ -163,3 +168,61 @@ graphSvg.append("text")
     .attr("dy", ".75rem") // déplacer le texte de 0.75rem
     .attr("transform", "rotate(-90)")
     .text("Espérance de vie (années)");
+
+
+
+
+// 3) Cartographie ***********************************************************************************************************************
+// Représentez les valeurs d'espérance de vie sur une carte. Trouver des données géographiques en format .geojson, et visualiser 
+//l'espérance de vie sous forme de : Carte choroplète et Cartogramme
+
+// créer son svg dans la nouvelle div avec l'id graphicChronoplete (refait comme la 1ère)
+const map = select("#graphicChronoplete")
+    .append('svg')
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("class", "map")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); // déplacer le groupe g
+
+// créer une projection grâce à geoMercator
+const projection = geoMercator()
+    .scale(70) // zoom => taille de la carte
+    .center([0, 20])
+    .translate([width / 2, height / 2]); // translate permet de centrer la carte
+
+// créer un path pour la projection. Cela permet de convertir les coordonnées en path SVG. Path signifie chemin
+const path = geoPath().projection(projection);
+
+// Donner l'echelle de couleur
+const colorScale = scaleLinear()
+    .domain([min(data2021.map(d => d.pibHabit)), max(data2021.map(d => d.pibHabit))]) // domaine de 0 à la valeur max de l'espérance de vie
+    .range(["white", "purple"]) // range de la hauteur du svg à 0
+
+// importer les données geojson
+json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then((data) => { // données trouvées sur https://d3-graph-gallery.com/graph/choropleth_basic.html
+
+    // change le nom United States en USA pour que les données correspondent (et d'autres si besoin)
+    const index = data2021.map(d => d.country).indexOf('United States');
+    if (index !== -1) {
+        data2021[index].country = 'USA'; // sinon on a une donnée grise
+    } // je ne connais pas les autres pays donc ça restera gris ^^'
+
+    // dessiner la carte
+    map.append("g")
+        .selectAll("path")
+        .data(data.features) // data.features = data du geojson
+        .join("path") // join permet de lier les données
+        .attr("d", path)
+        .attr("fill", d => {
+            // filtrer les données
+            let donneesFiltrees = data2021.find(dc => dc.country == d.properties.name);
+            return donneesFiltrees ? colorScale(donneesFiltrees.pibHabit) : "grey"; // si les données sont trouvées, appliquer la couleur, sinon appliquer gris ( = pas de données)
+        })
+});
+
+
+
+
+// 4) Animation **************************************************************************************************************************
+//
