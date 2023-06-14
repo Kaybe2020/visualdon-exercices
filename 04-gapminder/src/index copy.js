@@ -80,7 +80,7 @@ const mergeByCountry = (data1, data2, data3) => {
 // push les données année dans les tableaux créés
 annees.forEach(annee => {
     pop.push({ "annee": annee, "data": convertSi(populationData, annee, "pop") })
-    pibHabit.push({ "annee": annee, "data": convertSi(pibHabitantData, annee, "pibHabit") }) // le nom doit être le même que celui qu'on push (affiche pas échelle sinon)
+    pibHabit.push({ "annee": annee, "data": convertSi(pibHabitantData, annee, "pibHabitant") })
     espVie.push({ "annee": annee, "data": convertSi(esperanceVieData, annee, "espVie") })
 
     // créer des constantes annee pour chaque tableau
@@ -138,10 +138,10 @@ graphSvg.selectAll("circle")
     .data(data2021)
     .enter()
     .append("circle")
-    .attr("cx", d => pibHabitScale(parseFloat(d.pibHabit))) // parseFloat permet de parser le string en nombre (on force pour être sur)
+    .attr("cx", d => pibHabitScale(parseFloat(d.pibHabit)))
     .attr("cy", d => {
-        console.log(d); // confirme que les données sont correctement extraites
-        return espVieScale(parseFloat(d.espVie))
+         console.log(d); // confirme que les données sont correctement extraites
+         return espVieScale(parseFloat(d.espVie))
     })
     .attr("r", d => popScale(parseFloat(d.pop)))
     .attr("fill", "steelblue");
@@ -152,14 +152,20 @@ graphSvg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height - 6)
+    .attr("y", height + 20) // +20 pour mettre le texte en dessous de l'axe
     .text("PIB par habitant, inflation ajustée (dollars) ");
 
 //créer le texte pour l'axe Y
 graphSvg.append("text")
     .attr("class", "y label")
     .attr("text-anchor", "end")
-    .attr("y", 6)
+    .attr("y", -30) // -30 pour le placer en dehors de l'axe
     .attr("dy", ".75rem") // déplacer le texte de 0.75rem
     .attr("transform", "rotate(-90)")
     .text("Espérance de vie (années)");
+
+
+
+
+
+
