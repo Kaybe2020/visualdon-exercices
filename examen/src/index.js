@@ -71,6 +71,8 @@ console.log("MAP REGION : ", data.features.map((feature) => feature.properties.R
 // Affichage des résultats
 
 
+
+
 // Exercice 3 : Visualisation ********************************************************
 // Avec les données de l’exercice précédent, produisez les visualisations suivantes
 
